@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北續命指南 | 咖啡之城部落格</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#FF9A8B',
+                        'coffee-secondary': '#FF6A88',
+                        'coffee-accent': '#FF99AC',
+                        'coffee-bg': '#FFF5F7',
+                        'coffee-dark': '#4A3731',
+                        'candy-blue': '#A1C4FD',
+                        'candy-purple': '#C2E9FB'
+                    },
+                    fontFamily: {
+                        display: ['Outfit', 'Noto Sans TC', 'sans-serif'],
+                        body: ['Noto Sans TC', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FFF5F7;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 154, 139, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(161, 196, 253, 0.15) 0%, transparent 20%);
+            scroll-behavior: smooth;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(255, 106, 136, 0.1);
+        }
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #FF9A8B, transparent);
+            z-index: -1;
+            border-radius: 4px;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #FF6A88 0%, #FF99AC 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .media-container img {
+            width: 100%;
+            height: 60vh;
+            object-fit: cover;
+            border-radius: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #FF9A8B;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body text-coffee-dark antialiased overflow-x-hidden">
+
+    <!-- Sticky Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 z-50 bg-white/20">
+        <div id="progress" class="h-full bg-gradient-to-r from-coffee-primary to-candy-blue w-0 transition-all duration-150"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <div class="absolute top-10 left-10 w-24 h-24 bg-candy-blue rounded-full blur-3xl opacity-50 animate-pulse-slow"></div>
+        <div class="absolute bottom-10 right-10 w-32 h-32 bg-coffee-primary rounded-full blur-3xl opacity-50 animate-float"></div>
+
+        <div class="max-w-5xl w-full z-10">
+            <div class="mb-6 inline-block px-4 py-1 rounded-full bg-white/80 border border-pink-100 text-sm font-semibold tracking-widest text-coffee-secondary uppercase shadow-sm">
+                Student ID: B11208012
+            </div>
+            
+            <h1 class="text-4xl md:text-7xl font-display font-black leading-tight mb-8">
+                【台北續命指南】<br/>
+                <span class="gradient-text">從日式喫茶到世界冠軍</span>
+            </h1>
+
+            <div class="media-container mb-12 relative group">
+                <div class="absolute -inset-4 bg-gradient-to-r from-coffee-primary to-candy-blue rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                <img src='https://opal.google/board/blobs/002d548d-d4e3-4796-bffe-5af624d56629' alt='Taipei Coffee Scene' class="relative transform transition duration-700 hover:scale-[1.02]" />
+            </div>
+
+            <p class="text-lg md:text-2xl font-light text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                帶你走進這座「嗜啡成性」的咖啡之城，探索隱藏在巷弄間的琥珀色靈魂。
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        
+        <!-- Intro Bento Grid -->
+        <div class="bento-grid mb-24">
+            <div class="col-span-12 md:col-span-7 glass-card p-10 rounded-[2rem] relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21h18v-2H2M20 8h-2V5h2m0-2H4v10a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4v-3h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-display font-bold mb-6 section-title">一、 為什麼台北是全世界「最清醒」的城市？</h2>
+                <div class="space-y-4 text-gray-700 leading-loose text-lg">
+                    <p>如果替台北這座城市的都會男女抽一次血，檢驗報告上的主要成分可能不是血紅素，而是高濃度的咖啡因。這並非無稽之談，就連英國《BBC》與多家國際旅遊媒體，都曾為台北蓋章認證。</p>
+                    <p class="font-semibold text-coffee-secondary">在這裡，咖啡的意義早已超越了單純的生理提神，它更像是整座城市賴以運作的社會性代謝物。</p>
+                </div>
+            </div>
+            <div class="col-span-12 md:col-span-5 bg-coffee-dark text-white p-10 rounded-[2rem] flex flex-col justify-center transform hover:-rotate-1 transition-transform shadow-xl">
+                <p class="text-xl leading-relaxed italic opacity-90">
+                    「它是上班族逃離冷氣房的延伸辦公室，是文青們孵化靈感的實驗室，更是無數疲憊靈魂在都市叢林裡的收容所。」
+                </p>
+            </div>
+        </div>
+
+        <!-- History Timeline -->
+        <section class="mb-24">
+            <h2 class="text-4xl font-display font-bold mb-12 text-center">二、 台北咖啡時光機</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card p-8 rounded-3xl border-t-4 border-candy-blue hover:shadow-2xl transition-all">
+                    <div class="text-4xl mb-4">🏮</div>
+                    <h3 class="text-xl font-bold mb-3">1930s 啟蒙期</h3>
+                    <p class="text-gray-600">日式喫茶店如「萊茵」，空氣中瀰漫著現代化時髦濾鏡，是文人雅士的社交沙龍。</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl border-t-4 border-coffee-primary hover:shadow-2xl transition-all">
+                    <div class="text-4xl mb-4">✍️</div>
+                    <h3 class="text-xl font-bold mb-3">1950s-90s 巔峰期</h3>
+                    <p class="text-gray-600">明星咖啡館的文學巨擘，伴隨美式連鎖浪潮，咖啡正式成為人人可及的日常儀式。</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl border-t-4 border-candy-purple hover:shadow-2xl transition-all">
+                    <div class="text-4xl mb-4">🏆</div>
+                    <h3 class="text-xl font-bold mb-3">2010s-Now 精品期</h3>
+                    <p class="text-gray-600">世界冠軍店林立，人們討論產地、日曬與微氣候，升華為極致職人工藝運動。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current Trends -->
+        <section class="mb-24 bg-white rounded-[3rem] p-8 md:p-16 shadow-inner border border-pink-50">
+            <h2 class="text-4xl font-display font-bold mb-12 section-title">三、 現在台北流行這三味！</h2>
+            <div class="space-y-16">
+                <div class="flex flex-col md:flex-row gap-10 items-center">
+                    <div class="w-20 h-20 shrink-0 bg-candy-blue rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">01</div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-3">職人崇拜：冠軍頭銜的魔力</h4>
+                        <p class="text-gray-600 leading-relaxed">以興波咖啡為首，排隊人潮彷彿某種朝聖儀式。冠軍頭銜就是最強勢的流量通行證，每一口都是對完美的極致追求。</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row-reverse gap-10 items-center">
+                    <div class="w-20 h-20 shrink-0 bg-coffee-primary rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">02</div>
+                    <div class="text-right md:text-left">
+                        <h4 class="text-2xl font-bold mb-3">IG 視覺系：相機先喝的禮貌</h4>
+                        <p class="text-gray-600 leading-relaxed">空間美學決定壽命。韓系極簡、工業廢墟或復古老宅，氛圍感比味道更具社群影響力。</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-10 items-center">
+                    <div class="w-20 h-20 shrink-0 bg-candy-purple rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">03</div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-3">被咖啡耽誤的甜點店</h4>
+                        <p class="text-gray-600 leading-relaxed">肉桂捲、焦糖布丁、千層蛋糕，這些配角大膽逆襲，成為決定一家店受歡迎程度的關鍵主體。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rules & Struggles -->
+        <div class="bento-grid mb-24">
+            <div class="col-span-12 md:col-span-12 glass-card p-12 rounded-[3rem] bg-gradient-to-br from-white to-pink-50">
+                <h2 class="text-4xl font-display font-bold mb-10 text-center">四、 那些讓我們又愛又恨的「潛規則」</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div class="space-y-4">
+                        <h5 class="text-coffee-secondary font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 bg-coffee-secondary rounded-full"></span> 低消一杯飲品
+                        </h5>
+                        <p class="text-sm text-gray-600">即便點了千元甜點，這條死板規定仍是店家確保基本利潤的防線，常引發激烈論戰。</p>
+                    </div>
+                    <div class="space-y-4">
+                        <h5 class="text-coffee-secondary font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 bg-coffee-secondary rounded-full"></span> 90分鐘魔咒
+                        </h5>
+                        <p class="text-sm text-gray-600">與時間賽跑的生存遊戲，在高昂房租下，悠閒午後被迫成了限時挑戰。</p>
+                    </div>
+                    <div class="space-y-4">
+                        <h5 class="text-coffee-secondary font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 bg-coffee-secondary rounded-full"></span> 網紅 vs 實力派
+                        </h5>
+                        <p class="text-sm text-gray-600">裝潢美若天仙，咖啡卻雷破天際。學會辨別「濾鏡陷阱」已成為台北人的必備生存技能。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Outlook -->
+        <section class="mb-24 relative">
+            <div class="absolute -z-10 inset-0 bg-coffee-dark rounded-[4rem] transform rotate-1 scale-105 opacity-5"></div>
+            <div class="glass-card p-12 rounded-[4rem] border-2 border-white">
+                <h2 class="text-4xl font-display font-bold mb-10 text-center gradient-text">五、 未來咖啡廳長怎樣？</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="group">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all hover:shadow-xl hover:-translate-y-1">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3">
+                                🤖 <span class="group-hover:text-coffee-secondary transition-colors">賽博龐克咖啡</span>
+                            </h4>
+                            <p class="text-gray-600">自動手沖機器人與演算法結合，讓職人風味達到科學級的穩定與快速。</p>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all hover:shadow-xl hover:-translate-y-1">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3">
+                                🧺 <span class="group-hover:text-coffee-secondary transition-colors">斜槓經營學</span>
+                            </h4>
+                            <p class="text-gray-600">洗衣店、藝廊、選物店與咖啡廳無縫融合，成為全方位的生活感官場景。</p>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all hover:shadow-xl hover:-translate-y-1">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3">
+                                🌱 <span class="group-hover:text-coffee-secondary transition-colors">綠色覺醒</span>
+                            </h4>
+                            <p class="text-gray-600">植物奶、公平貿易與透明履歷，喝一杯咖啡就能實踐道德消費的社會救贖。</p>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all hover:shadow-xl hover:-translate-y-1">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3">
+                                🏃 <span class="group-hover:text-coffee-secondary transition-colors">迷你外帶店</span>
+                            </h4>
+                            <p class="text-gray-600">省下空間成本，將價值回饋在杯中物，提供價格親民卻高品質的日常幸福。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="text-center py-20">
+            <div class="inline-block p-10 bg-gradient-to-br from-coffee-primary/20 to-candy-blue/20 rounded-full mb-8">
+                <svg class="w-16 h-16 text-coffee-secondary animate-float" fill="currentColor" viewBox="0 0 24 24"><path d="M2 21h18v-2H2M20 8h-2V5h2m0-2H4v10a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4v-3h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>
+            </div>
+            <p class="text-2xl md:text-3xl font-display font-light max-w-4xl mx-auto leading-relaxed text-gray-700 italic">
+                「台北的咖啡因代謝系統仍在持續運作，這座城市依然清醒，依然在每一杯琥珀色的液體中，尋找著下一個百年的靈魂出口。」
+            </p>
+        </footer>
+    </main>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progress").style.width = scrolled + "%";
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.classList.remove('translate-y-10');
+                    entry.target.classList.remove('opacity-0');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section, .glass-card').forEach(el => {
+            el.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
