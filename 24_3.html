@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理財先鋒號 - 大學生 0050 複利試算與 AI 導師</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar for chat */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #059669 0%, #1d4ed8 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header Banner -->
+    <header class="gradient-bg text-white py-8 px-4 sm:px-6 lg:px-8 shadow-xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-sm mb-3">
+                    <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> 學生理財專屬數位沙盒
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">理財先鋒號 <span class="text-emerald-300">0050 複利模擬器</span></h1>
+                <p class="mt-2 text-emerald-100 max-w-2xl text-sm sm:text-base">
+                    基於《懶錢包LazyWallet》18 歲女大生每月 1 萬元投資 0050 的精闢解析，用數據為你揭秘「賺取 3000 萬至 1 億元」的時間魔法。
+                </p>
+            </div>
+            <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/20 shadow-inner">
+                <div class="p-2 bg-emerald-500 rounded-lg text-white">
+                    <i data-lucide="line-chart" class="w-6 h-6 animate-pulse"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-emerald-200">文章核心關鍵字</div>
+                    <div class="text-sm font-bold">越早開始，時間勝過本金！</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- LEFT: Calculator & Knowledge (Col 7) -->
+        <div class="lg:col-span-7 flex flex-col gap-8">
+            
+            <!-- Tab Navigation for Tools -->
+            <div class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex gap-2">
+                <button id="tab-btn-calc" onclick="switchTab('calc')" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100">
+                    <i data-lucide="calculator" class="w-5 h-5"></i> 0050 複利動態試算
+                </button>
+                <button id="tab-btn-delay" onclick="switchTab('delay')" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 text-slate-600 hover:bg-slate-50">
+                    <i data-lucide="hourglass" class="w-5 h-5"></i> 遲到十年的可怕代價
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Calculator -->
+            <div id="tab-content-calc" class="bg-white rounded-3xl shadow-md border border-slate-100 p-6 sm:p-8 transition-all duration-300">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-extrabold flex items-center gap-2 text-slate-800">
+                        <span class="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+                        複利魔法計算機
+                    </h2>
+                    <span class="text-xs text-slate-400">數據參考：0050 歷史表現</span>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Input 1: Monthly Investment -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-bold text-slate-700 flex items-center gap-1">
+                                <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i> 每月預計投入金額 (NT$)
+                            </label>
+                            <span id="label-monthly" class="text-lg font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">10,000 元</span>
+                        </div>
+                        <input type="range" id="input-monthly" min="2000" max="50000" step="1000" value="10000" oninput="updateCalculator()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                        <div class="flex justify-between text-xs text-slate-400 mt-1">
+                            <span>$2,000</span>
+                            <span>$10,000 (女大生標準)</span>
+                            <span>$50,000</span>
+                        </div>
+                    </div>
+
+                    <!-- Input 2: Rate of Return Options -->
+                    <div>
+                        <label class="text-sm font-bold text-slate-700 flex items-center gap-1 mb-3">
+                            <i data-lucide="percent" class="w-4 h-4 text-indigo-600"></i> 預估年化報酬率 (按文檔設定)
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <button onclick="setRate(6)" id="rate-6" class="rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-white text-slate-600 hover:border-slate-300">
+                                6% <span class="block text-[10px] font-normal text-slate-400">全球分散保守</span>
+                            </button>
+                            <button onclick="setRate(8)" id="rate-8" class="rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-white text-slate-600 hover:border-slate-300">
+                                8% <span class="block text-[10px] font-normal text-slate-400">全球指數量化</span>
+                            </button>
+                            <button onclick="setRate(10)" id="rate-10" class="rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-emerald-50 text-emerald-700 border-emerald-500 shadow-sm">
+                                10% <span class="block text-[10px] font-normal text-slate-500">台股長線平均</span>
+                            </button>
+                            <button onclick="setRate(14)" id="rate-14" class="rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-white text-slate-600 hover:border-slate-300">
+                                14.06% <span class="block text-[10px] font-normal text-slate-400">0050 成立以來</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Input 3: Investment Years -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-bold text-slate-700 flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i> 投資年期 (時間跨度)
+                            </label>
+                            <span id="label-years" class="text-lg font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">47 年 (18歲至65歲)</span>
+                        </div>
+                        <input type="range" id="input-years" min="4" max="50" step="1" value="47" oninput="updateCalculator()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                        <div class="flex justify-between text-xs text-slate-400 mt-1">
+                            <span>4 年 (大學生涯)</span>
+                            <span>30 年 (中長線)</span>
+                            <span>47 年 (至退休年齡)</span>
+                        </div>
+                    </div>
+
+                    <!-- Results Presentation Area -->
+                    <div class="bg-gradient-to-r from-slate-50 to-emerald-50/50 p-6 rounded-2xl border border-slate-100 mt-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                            <div class="bg-white p-4 rounded-xl border border-slate-100">
+                                <div class="text-xs text-slate-400 font-bold mb-1">累積投入本金</div>
+                                <div id="res-principal" class="text-xl font-black text-slate-700">564 萬元</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border border-slate-100">
+                                <div class="text-xs text-slate-400 font-bold mb-1">純複利增值 (利滾利)</div>
+                                <div id="res-interest" class="text-xl font-black text-emerald-600">+1.04 億元</div>
+                            </div>
+                            <div class="bg-emerald-600 p-4 rounded-xl text-white shadow-md">
+                                <div class="text-xs text-emerald-200 font-bold mb-1">預估資產總額</div>
+                                <div id="res-total" class="text-2xl font-black text-white">1.1 億元</div>
+                            </div>
+                        </div>
+
+                        <!-- Visual Compound Bar Chart (Custom CSS) -->
+                        <div class="mt-6">
+                            <div class="flex justify-between text-xs text-slate-500 font-bold mb-2">
+                                <span>本金佔比 <span id="bar-principal-pct">5%</span></span>
+                                <span>複利佔比 <span id="bar-interest-pct">95%</span></span>
+                            </div>
+                            <div class="w-full h-6 bg-slate-200 rounded-full flex overflow-hidden shadow-inner">
+                                <div id="bar-principal" class="bg-slate-400 transition-all duration-500" style="width: 5%;"></div>
+                                <div id="bar-interest" class="bg-emerald-500 transition-all duration-500" style="width: 95%;"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-400 text-center mt-2 italic">
+                                * 發現了嗎？隨著時間拉長，貢獻最大的根本不是本金，而是龐大的「複利魔法」！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Cost of Delay -->
+            <div id="tab-content-delay" class="bg-white rounded-3xl shadow-md border border-slate-100 p-6 sm:p-8 transition-all duration-300 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-extrabold flex items-center gap-2 text-slate-800">
+                        <span class="p-1.5 bg-rose-100 text-rose-700 rounded-lg"><i data-lucide="clock" class="w-5 h-5"></i></span>
+                        「遲到的代價」模擬對比
+                    </h2>
+                    <span class="text-xs text-rose-500 font-bold">年化報酬率 8% 基準</span>
+                </div>
+
+                <p class="text-sm text-slate-500 mb-6 leading-relaxed">
+                    文檔指出：若目標是<b>在 65 歲時擁有與 18 歲開始累積相同的 NT$ 5,667 萬元</b>。晚 10 年、20 年、30 年甚至 40 年才動手，每月所需投入的本金將呈現「指數級爆發」！
+                </p>
+
+                <!-- Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Card 18 -->
+                    <div class="p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/30 relative overflow-hidden">
+                        <span class="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-black py-1 px-3.5 rounded-bl-xl">黃金開局</span>
+                        <div class="text-xs text-slate-400 font-bold">18 歲起步 (大學生)</div>
+                        <div class="text-2xl font-black text-emerald-600 mt-1">10,000 元 <span class="text-xs font-normal text-slate-500">/ 月</span></div>
+                        <div class="text-xs text-slate-500 mt-2">累計本金：564 萬</div>
+                        <div class="text-xs text-emerald-600 font-semibold mt-1">難度係數：★☆☆☆☆ (最輕鬆)</div>
+                    </div>
+
+                    <!-- Card 28 -->
+                    <div class="p-5 rounded-2xl border border-amber-200 bg-amber-50/10">
+                        <div class="text-xs text-slate-400 font-bold">28 歲起步 (晚10年)</div>
+                        <div class="text-2xl font-black text-amber-600 mt-1">23,000 元 <span class="text-xs font-normal text-slate-500">/ 月</span></div>
+                        <div class="text-xs text-slate-500 mt-2">需要準備：<strong class="text-amber-700">2.3 倍</strong> 資金</div>
+                        <div class="text-xs text-amber-600 font-semibold mt-1">難度係數：★★☆☆☆</div>
+                    </div>
+
+                    <!-- Card 38 -->
+                    <div class="p-5 rounded-2xl border border-orange-200 bg-orange-50/10">
+                        <div class="text-xs text-slate-400 font-bold">38 歲起步 (晚20年)</div>
+                        <div class="text-2xl font-black text-orange-600 mt-1">51,848 元 <span class="text-xs font-normal text-slate-500">/ 月</span></div>
+                        <div class="text-xs text-slate-500 mt-2">需要準備：<strong class="text-orange-700">5.2 倍</strong> 資金</div>
+                        <div class="text-xs text-orange-600 font-semibold mt-1">難度係數：★★★☆☆</div>
+                    </div>
+
+                    <!-- Card 48 -->
+                    <div class="p-5 rounded-2xl border border-red-200 bg-red-50/10">
+                        <div class="text-xs text-slate-400 font-bold">48 歲起步 (晚30年)</div>
+                        <div class="text-2xl font-black text-red-600 mt-1">134,192 元 <span class="text-xs font-normal text-slate-500">/ 月</span></div>
+                        <div class="text-xs text-slate-500 mt-2">需要準備：<strong class="text-red-700">13.4 倍</strong> 資金</div>
+                        <div class="text-xs text-red-600 font-semibold mt-1">難度係數：★★★★★ (幾乎不可能)</div>
+                    </div>
+                </div>
+
+                <!-- Custom Bar Visualizer for Cost -->
+                <div class="mt-6 space-y-3">
+                    <div class="text-xs font-bold text-slate-500">每月投入本金對比柱狀圖：</div>
+                    <div class="space-y-2">
+                        <div>
+                            <div class="flex justify-between text-[11px] text-slate-400 mb-0.5"><span>18歲 ($10,000)</span> <span>1x</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500" style="width: 7.4%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-slate-400 mb-0.5"><span>28歲 ($23,000)</span> <span>2.3x</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-amber-500" style="width: 17.1%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-slate-400 mb-0.5"><span>38歲 ($51,848)</span> <span>5.2x</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-orange-500" style="width: 38.6%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-slate-400 mb-0.5"><span>48歲 ($134,192)</span> <span>13.4x</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-red-500" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section Accordion -->
+            <div class="bg-white rounded-3xl shadow-md border border-slate-100 p-6 sm:p-8">
+                <h2 class="text-xl font-extrabold flex items-center gap-2 text-slate-800 mb-6">
+                    <span class="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg"><i data-lucide="help-circle" class="w-5 h-5"></i></span>
+                    知識庫精選 FAQ
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <div class="border-b border-slate-100 pb-4">
+                        <button onclick="toggleFaq(1)" class="w-full flex justify-between items-center text-left py-2 text-slate-800 hover:text-emerald-600 transition-colors">
+                            <span class="font-bold text-sm sm:text-base pr-4">Q1: 一個月只有 1 萬塊，乾脆不要投資，拿去旅遊享受生活？</span>
+                            <i id="faq-icon-1" data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div id="faq-ans-1" class="hidden mt-3 text-sm text-slate-500 leading-relaxed pl-1">
+                            <p class="mb-2"><strong>原創觀點：有閒錢就買，現在就是最好時機！</strong></p>
+                            文章中女大生爸爸每月給零用錢 1 萬元，打工賺 1.5 萬元，並擁有 15 萬元的緊急預備金。這代表那 1 萬元確實是「閒錢」。投資越早開始越好，時間帶來的豐碩回報，最終會超乎想像！學生時光本來就可以體驗青春，但只要有餘裕，兩者並不需要二選一。
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="border-b border-slate-100 pb-4">
+                        <button onclick="toggleFaq(2)" class="w-full flex justify-between items-center text-left py-2 text-slate-800 hover:text-emerald-600 transition-colors">
+                            <span class="font-bold text-sm sm:text-base pr-4">Q2: 投資 0050 真的可以賺到上千萬，甚至「1億元」嗎？</span>
+                            <i id="faq-icon-2" data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div id="faq-ans-2" class="hidden mt-3 text-sm text-slate-500 leading-relaxed pl-1">
+                            <p class="mb-2"><strong>確實如此！這就是複利的魔法，依年化報酬率有不同的模擬情況：</strong></p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>6% 年化回報 (保守)：</strong> 投資 30 年累積快 1,000 萬，到 65 歲退休時可達將近 3,000 萬元。</li>
+                                <li><strong>10% 年化回報 (歷史平均)：</strong> 18歲開始每月1萬，投資30年累積 2,000 萬，到 65 歲退休時高達 1.1 億元！(自己只出 564 萬本金)。</li>
+                                <li><strong>14.06% 年化回報 (0050成立以來)：</strong> 若以此樂觀預估，30年達 4,500 萬，65歲退休時資產甚至能跨越 4.3 億元！</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="border-b border-slate-100 pb-4">
+                        <button onclick="toggleFaq(3)" class="w-full flex justify-between items-center text-left py-2 text-slate-800 hover:text-emerald-600 transition-colors">
+                            <span class="font-bold text-sm sm:text-base pr-4">Q3: 女大生規劃每月拿出 5,000 元買比特幣可行嗎？</span>
+                            <i id="faq-icon-3" data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div id="faq-ans-3" class="hidden mt-3 text-sm text-slate-500 leading-relaxed pl-1">
+                            <p class="mb-2"><strong>作者建議：「保留態度」！33% 的配置比例太高了。</strong></p>
+                            加密貨幣波動劇烈（俗稱「幣圈一天，人間十年」），你是否足夠了解這項資產和風險？即便支持加密貨幣的投資流派，也大多建議配置 1% ~ 5% 的小比例。而女大生每月的 5,000 元已佔她全部投資預算（15,000元）的 33%，風險過度集中。
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="border-b border-slate-100 pb-4">
+                        <button onclick="toggleFaq(4)" class="w-full flex justify-between items-center text-left py-2 text-slate-800 hover:text-emerald-600 transition-colors">
+                            <span class="font-bold text-sm sm:text-base pr-4">Q4: 指數化投資的核心精神是什麼？</span>
+                            <i id="faq-icon-4" data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div id="faq-ans-4" class="hidden mt-3 text-sm text-slate-500 leading-relaxed pl-1">
+                            <strong>不選股、不擇時，買下整個市場、持續買進並長期持有。</strong><br>
+                            高點與天花板並不存在。最適合投資的時機，第一個是十年前，第二個就是現在！
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: AI Chat Bot Grounded on Doc (Col 5) -->
+        <div class="lg:col-span-5 flex flex-col h-[750px] lg:h-auto bg-white rounded-3xl shadow-md border border-slate-100 overflow-hidden sticky top-6">
+            
+            <!-- Chat Header -->
+            <div class="gradient-bg p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <i data-lucide="bot" class="w-6 h-6 text-emerald-300"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-emerald-600 rounded-full"></span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm sm:text-base">懶錢包 AI 理財導師</div>
+                        <div class="text-[10px] text-emerald-200">基於 NotebookLM 專屬知識庫</div>
+                    </div>
+                </div>
+                <button onclick="clearChat()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white" title="清除對話">
+                    <i data-lucide="rotate-ccw" class="w-4.5 h-4.5"></i>
+                </button>
+            </div>
+
+            <!-- API Configuration Modal Trigger -->
+            <div class="bg-slate-50 px-4 py-2 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span class="flex items-center gap-1">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-500"></i> API金鑰狀態：
+                    <span id="api-status-badge" class="font-bold text-amber-600">自動注入 (可手動修改)</span>
+                </span>
+                <button onclick="toggleConfigModal()" class="text-indigo-600 hover:underline font-bold">手動設定</button>
+            </div>
+
+            <!-- Chat Message Area -->
+            <div id="chat-messages" class="flex-grow p-5 overflow-y-auto chat-scroll space-y-4 bg-slate-50/50">
+                <!-- Bot Welcome Message -->
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                        <i data-lucide="bot" class="w-4.5 h-4.5"></i>
+                    </div>
+                    <div class="bg-white px-4 py-3 rounded-2xl shadow-sm border border-slate-100 text-sm max-w-[85%] leading-relaxed">
+                        哈囉！我是由懶錢包知識庫訓練的理財學姐。👋<br>
+                        我的任務是基於<b>《18歲女大生每月1萬投資0050》</b>這篇文章的真實數據與觀點為你解惑。<br>
+                        你可以直接問我複利、年化報酬率、或者是比特幣在資產配置中的問題喔！
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Ask Prompts -->
+            <div class="px-4 py-3 bg-white border-t border-slate-100">
+                <div class="text-[11px] text-slate-400 font-bold mb-1.5 flex items-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i> 大學生熱門提問：
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="quickAsk('大三開始投資可以存多少？')" class="text-[11px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 px-2.5 py-1 rounded-full transition-all text-slate-600">
+                        大三開始可以存多少？
+                    </button>
+                    <button onclick="quickAsk('我想每月拿 5000 買比特幣好嗎？')" class="text-[11px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 px-2.5 py-1 rounded-full transition-all text-slate-600">
+                        拿 5000 買比特幣好嗎？
+                    </button>
+                    <button onclick="quickAsk('若要退休存到1.1億，18歲該投多少？')" class="text-[11px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 px-2.5 py-1 rounded-full transition-all text-slate-600">
+                        如何存到 1.1 億？
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="p-4 bg-white border-t border-slate-100 flex gap-2">
+                <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="輸入理財問題...（例如：6% 報酬率好嗎？）" class="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                <button onclick="sendMessage()" id="send-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors shadow-sm shrink-0 flex items-center justify-center">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-500 text-xs py-6 text-center border-t border-slate-900 mt-8">
+        <p class="max-w-md mx-auto leading-relaxed px-4">
+            理財先鋒號為教育推廣工具。本站資料全部源自 LazyWallet 懶錢包影片之 NotebookLM 知識庫內容，不代表任何投資建議與買賣邀約。
+        </p>
+        <p class="mt-2 text-slate-600">
+            © 2026 理財先鋒號. All Rights Reserved.
+        </p>
+    </footer>
+
+    <!-- Setup Custom API Key Modal -->
+    <div id="config-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-black text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="key" class="w-5 h-5 text-indigo-600"></i> 設定 Gemini API 金鑰
+                </h3>
+                <button onclick="toggleConfigModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                系統預設會在執行時自動讀取環境提供的 API Key。如果您在自己的環境中運行，且需要手動設定專屬的 Gemini 密鑰，請在下方輸入。我們不會將金鑰上傳至第三方伺服器。
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Gemini API Key</label>
+                    <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="toggleConfigModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">取消</button>
+                <button onclick="saveApiKey()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-colors shadow-sm">儲存設定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification (Replacement of Browser Alerts) -->
+    <div id="toast-notif" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none z-50">
+        <i data-lucide="info" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+        <span id="toast-message">提示訊息</span>
+    </div>
+
+    <!-- Embedded NotebookLM Source Text in JS -->
+    <script>
+        const KNOWLEDGE_BASE_TEXT = `
+我老師懶人理財，快打開懶錢包！前陣子有朋友傳了篇財經新聞給我，主角是一位滿 18 歲的女大學生，他好奇一個月只有 1 萬塊能投資元大台灣50（0050），是不是就乾脆不要了呢？
+這個話題感覺很有趣，原始文章來自學生論壇 Dcard。今天就來跟大家聊聊我的想法吧。
+
+【主角背景分析】
+18歲女大生準備去開證券戶。
+每個月份爸爸會給零用錢 1 萬元，她自己打工賺錢 15,000 元。
+另外在國高中階段，有存了 15 萬元的緊急預備金。
+目前規劃是：每個月拿出 1 萬元買 0050（台灣50 ETF），5,000 元買比特幣。
+然而，上網發現有些人建議「不如把錢拿去旅遊享受生活，享受青春」，這讓她不知如何是好，才問定期定額 0050 一個月只有 1 萬塊乾脆不要嗎？
+
+【作者核心想法】
+我的想法很簡單：要投資，有閒錢就買，現在就是最好的時機。
+可能有些人會想說 1 萬元不多，等出社會再開始、等工作穩定了再開始、等買了房子再開始、等要存退休金再開始。但「投資越早開始越好，時間會帶來豐碩回報」，最終累積的資產很可能超乎大家想像。
+
+【年化報酬率 14.06% 情境（以整數14%計算）】
+截止我寫稿的 4 月底，0050 成立以來的年化報酬率是 14.06%，就以整數 14% 計算：
+1. 每個月初投資 1 萬元，大學四年（共投入 48 萬元），畢業時資產會累積超過 63 萬元，獲利 15 萬多元。聽起來好像不多。
+2. 只要時間拉長結果就很驚人：一樣從 18 歲開始，每月持之以恆投入 1 萬元，30年後（48歲）共投入本金 360 萬元，資產會破 4,500 萬元！
+3. 若堅持到退休（47年下來，至65歲），共投入本金 564 萬元，最終資產更會超過 4.3 億元！年化報酬率 14% 算下來真的是天文數字。
+
+【年化報酬率 10% 情境（台股歷史長線平均）】
+若覺得 14% 太樂觀，回顧台股 60 年長期的歷史回撤，年化報酬率大約在 10% 左右。一樣是 18 歲開始每月定期定額 1 萬元：
+1. 大學四年結束會累積到 58 萬多元。
+2. 投資 10 年（28歲）會來到 200 萬元。
+3. 30年時（48歲）資產來到 2,000 萬元。
+4. 到達退休的 65 歲（投資47年），資產更來到 1.1 億元！其中真正由自己拿出的本金只有 564 萬元，其餘一億多元全部來自長期複利效果。重點是：要趁早開始行動！
+
+【全球分散投資情境（6% ~ 9%）】
+分散投資到全世界股票市場，合理的年化報酬率大約是 7% 到 9%，另外還加算更保守的 6% 給大家參考：
+在年化報酬率 6% 的情境，堅定不移投資 30 年就能累積快 1,000 萬元。到了 65 歲退休時，資產則有將近 3,000 萬元。
+
+【為什麼說投資永遠越早開始越好？——「遲到的代價」模擬（以 8% 年化回報計算）】
+若一樣以 8% 回報來模擬退休時（65歲，投資47年）擁有的財富：
+1. 18歲起每月投 1 萬：退休累積 5,667 萬多元，自己投入的本金只有 564 萬元，其餘 5,100 萬元都來自投資複利！
+2. 晚 10 年（28歲）才開始：想要在 65 歲擁有同樣的 5,667 萬元，每個月得拿出 23,000 元（翻倍！）。
+3. 晚 20 年（38歲）才開始：每月得拿出 51,848 元才追得上年輕的自己。
+4. 晚 30 年（48歲）才開始：每個月得投 134,192 元！
+5. 晚 40 年（58歲）才開始：基本不可能追上。
+這就是複利最震撼的地方，真正貢獻最大的不是本金，而是時間！
+
+【關於比特幣 (Bitcoin) 買 5000 元的看法】
+作者對加密貨幣持保留態度。買比特幣並非不行，但會先問「你夠了解這項資產嗎？能了解風險與定位嗎？」還是看它過往高漲幅才跟風？幣圈波動劇烈，「幣圈一天，人間十年」，並非每個人都能承擔。
+資產配置納入加密貨幣，在投資圈內還沒有完全共識，即便支持派也多建議配置 1% 至 5% 的極小比例。女大生每月拿 5,000 元已佔她全部投資額的 33%，比例過度高了。
+
+【總結】
+最適合的投資時機是「十年前」，第二好是「現在」。
+不管資金多寡，只要是閒錢，都非常適合進行指數化投資，不選股、不擇時，買下整個市場並持續買進、長期持有。高點和天花板並不存在。
+`;
+
+        // Local Fallback Responses (Offline Q&A Matcher)
+        const LOCAL_RESPONSES = [
+            {
+                keywords: ["1萬", "一萬", "乾脆不要", "享受生活", "值得嗎"],
+                reply: "對！文章中提到「有閒錢就買，現在就是最好的時機」。很多人想等工作穩定了、買房了、存退休金了才開始，但投資越早開始越好。只要那 1 萬元是閒錢，就絕對應該投資！大學生也能透過時間累積可觀資產。"
+            },
+            {
+                keywords: ["比特幣", "虛擬貨幣", "加密貨幣", "5000", "5千"],
+                reply: "作者對比特幣的態度是「比較保留」的。買比特幣不是不行，但你是否了解其定位與高波動？（俗稱幣圈一天，人間十年）。在資產配置中，支持加密貨幣的專家也大多建議只配 1% ~ 5%。而女大生每月的 5000 元高達投資預算的 33%，這比例太高了！"
+            },
+            {
+                keywords: ["1.1億", "1億", "一億", "退休"],
+                reply: "想要退休存到 1.1 億，只要把握台股歷史平均報酬率（10%），從 18 歲起每月存 1 萬元到 65 歲退休（共 47 年），最終資產就會來到 1.1 億元！最神奇的是，你真正出的本金只有 564 萬元，其餘一億多元全部都是複利幫你賺的。"
+            },
+            {
+                keywords: ["年化報酬率", "回報", "報酬率", "14%", "10%", "8%", "6%"],
+                reply: "文章列出多種回報情境（18歲起每月投入1萬）：\n- 0050歷史年化14.06%：30年可得4,500萬，退休高達4.3億元。\n- 台股歷史均值10%：30年可得2,000萬，退休可達1.1億元。\n- 全球股票7%~9%（以8%計算）：退休可達5,667萬元。\n- 保守估算6%：30年可得近1,000萬，退休可得近3,000萬元。"
+            },
+            {
+                keywords: ["代價", "晚十年", "遲到", "28歲", "38歲", "48歲"],
+                reply: "「遲到的代價」非常驚人！在 8% 年化下：\n- 18 歲開始：每月只需 1 萬元即可在 65 歲擁有 5,667 萬。\n- 28 歲開始：每月需要拿出 23,000 元（翻倍！）。\n- 38 歲開始：每月需要高達 51,848 元。\n- 48 歲開始：每月更需高達 134,192 元！這證明了時間才是複利魔法最核心的原料。"
+            }
+        ];
+
+        // Global State variables
+        let selectedRate = 10; // Default 10%
+        let userApiKey = ""; // User-provided Gemini API Key
+
+        // Initialize Lucide Icons on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateCalculator();
+        });
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            const btnCalc = document.getElementById('tab-btn-calc');
+            const btnDelay = document.getElementById('tab-btn-delay');
+            const contentCalc = document.getElementById('tab-content-calc');
+            const contentDelay = document.getElementById('tab-content-delay');
+
+            if (tab === 'calc') {
+                btnCalc.className = "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100";
+                btnDelay.className = "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 text-slate-600 hover:bg-slate-50";
+                contentCalc.classList.remove('hidden');
+                contentDelay.classList.add('hidden');
+            } else {
+                btnDelay.className = "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100";
+                btnCalc.className = "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 text-slate-600 hover:bg-slate-50";
+                contentDelay.classList.remove('hidden');
+                contentCalc.classList.add('hidden');
+            }
+        }
+
+        // Accordion (FAQ) Toggle Logic
+        function toggleFaq(index) {
+            const answer = document.getElementById(`faq-ans-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            
+            if (answer.classList.contains('hidden')) {
+                answer.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                answer.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Custom Calculator updates
+        function setRate(rate) {
+            selectedRate = rate;
+            
+            // Highlight active button
+            const btns = document.querySelectorAll('.rate-btn');
+            btns.forEach(btn => {
+                btn.className = "rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-white text-slate-600 hover:border-slate-300";
+            });
+
+            const activeBtn = document.getElementById(`rate-${rate === 14.06 ? '14' : rate}`);
+            if (activeBtn) {
+                activeBtn.className = "rate-btn py-2.5 px-3 rounded-xl border font-bold text-xs sm:text-sm text-center transition-all bg-emerald-50 text-emerald-700 border-emerald-500 shadow-sm";
+            }
+
+            updateCalculator();
+        }
+
+        function formatCurrency(amount) {
+            if (amount >= 100000000) {
+                return (amount / 100000000).toFixed(2) + " 億元";
+            } else {
+                return Math.round(amount / 10000).toLocaleString() + " 萬元";
+            }
+        }
+
+        function updateCalculator() {
+            const monthlyValue = parseInt(document.getElementById('input-monthly').value);
+            const yearsValue = parseInt(document.getElementById('input-years').value);
+
+            // Update Labels
+            document.getElementById('label-monthly').innerText = monthlyValue.toLocaleString() + " 元";
+            
+            // Quick annotation for custom years
+            let yearNote = "";
+            if (yearsValue === 4) yearNote = " (大學生涯)";
+            else if (yearsValue === 30) yearNote = " (中長線)";
+            else if (yearsValue === 47) yearNote = " (18歲至65歲)";
+            document.getElementById('label-years').innerText = yearsValue + " 年" + yearNote;
+
+            // Compound Calculation
+            // Monthly deposit, annual compounding simplified formula for speed:
+            // S = P * (((1 + r)^n - 1) / r) * (1 + r) where r is monthly rate, n is total months
+            const r_annual = selectedRate / 100;
+            const r_monthly = r_annual / 12;
+            const n_months = yearsValue * 12;
+            
+            let totalAsset = 0;
+            if (r_monthly > 0) {
+                totalAsset = monthlyValue * ((Math.pow(1 + r_monthly, n_months) - 1) / r_monthly) * (1 + r_monthly);
+            } else {
+                totalAsset = monthlyValue * n_months;
+            }
+
+            const principal = monthlyValue * n_months;
+            const interest = Math.max(0, totalAsset - principal);
+
+            // Display Results
+            document.getElementById('res-principal').innerText = formatCurrency(principal);
+            document.getElementById('res-interest').innerText = "+" + formatCurrency(interest);
+            document.getElementById('res-total').innerText = formatCurrency(totalAsset);
+
+            // Update custom bar visualizer
+            const principalPct = Math.max(1, Math.min(99, Math.round((principal / totalAsset) * 100)));
+            const interestPct = 100 - principalPct;
+
+            document.getElementById('bar-principal-pct').innerText = principalPct + "%";
+            document.getElementById('bar-interest-pct').innerText = interestPct + "%";
+            
+            document.getElementById('bar-principal').style.width = principalPct + "%";
+            document.getElementById('bar-interest').style.width = interestPct + "%";
+        }
+
+        // Custom Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast-notif');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3500);
+        }
+
+        // Modal triggers
+        function toggleConfigModal() {
+            const modal = document.getElementById('config-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function saveApiKey() {
+            const keyInput = document.getElementById('api-key-input').value.trim();
+            userApiKey = keyInput;
+            const badge = document.getElementById('api-status-badge');
+            
+            if (userApiKey) {
+                badge.innerText = "已載入使用者 Key";
+                badge.className = "font-bold text-emerald-600";
+                showToast("成功設定自訂 Gemini API Key！");
+            } else {
+                badge.innerText = "自動注入 (未手動指定)";
+                badge.className = "font-bold text-amber-600";
+                showToast("已清除自訂 Key，將切換回系統預設設定。");
+            }
+            toggleConfigModal();
+        }
+
+        // Gemini API Interaction (with exponential backoff retries up to 5 times)
+        async function fetchGeminiAnswer(userQuery, retryCount = 0) {
+            // Environment key priority, then user-specified key, fallback to blank
+            let activeKey = "";
+            if (typeof __api_key !== 'undefined' && __api_key) {
+                activeKey = __api_key;
+            } else if (userApiKey) {
+                activeKey = userApiKey;
+            } else {
+                activeKey = ""; // Empty string for default environment injection
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
+            
+            const systemPrompt = `你是一個嚴格且親切的 AI 理財學長姐「懶錢包助理」，專為年輕大學生解答投資問題。
+你的「唯一知識庫」是以下文檔：
+=============================
+${KNOWLEDGE_BASE_TEXT}
+=============================
+
+【回答規則與限制】：
+1. 你的回答必須 100% 遵守、嚴格基於提供的文檔內文。不得憑空編造數據（例如不得推薦文檔以外的基金或股票如 00878、0056 等，除非使用者主動提及，你也必須禮貌表明這不是原文章之內容，並將話題帶回 0050、比特幣、複利與時間價值）。
+2. 對於文章提及的核心數據（例如 14% 的 4.3 億、10% 的 1.1 億、6% 的近 3000 萬、28歲開始要投 23000 元），在回答相關問題時應優先準確重述。
+3. 如果使用者問到非文章內容（例如台積電、其他虛擬幣、出國旅遊景點推薦等），請禮貌告知：「這部分在我們提供的 LazyWallet 原始文檔中沒有提及，但我可以為您說明關於每月 1 萬元定期定額 0050 或比特幣配置的看法喔！」
+4. 語氣溫和、熱情、正面、富有啟發性，並一律使用繁體中文（Taiwan）回答。`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Gemini API 請求失敗，狀態碼: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，我的思緒被干擾了，請再試一次。";
+            } catch (error) {
+                if (retryCount < 5) {
+                    const delay = Math.pow(2, retryCount) * 1000;
+                    // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchGeminiAnswer(userQuery, retryCount + 1);
+                } else {
+                    console.error("Gemini API Retries Failed: ", error);
+                    throw error;
+                }
+            }
+        }
+
+        // Local Smart Fallback Keyword Matcher (If API fails or is not ready)
+        function getLocalFallbackAnswer(query) {
+            const cleanQuery = query.toLowerCase();
+            for (const item of LOCAL_RESPONSES) {
+                if (item.keywords.some(kw => cleanQuery.includes(kw))) {
+                    return `【提示：已為您切換至離線知識庫精準比對回覆】\n\n${item.reply}`;
+                }
+            }
+            return `【提示：已為您切換至離線知識庫回覆】\n\n對不起，此問題超出本篇文章（18歲女大生1萬元投資0050與比特幣）之範圍。你可以問我關於：\n1. 「一個月只有 1 萬元真的能投資嗎？」\n2. 「我想在 65 歲有 1 億，該怎麼做？」\n3. 「比特幣規劃 5,000 元作者怎麼看？」\n4. 「什麼是遲到十年的代價？」`;
+        }
+
+        // Chat Interface Logic
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function appendMessage(sender, text) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = sender === 'user' ? 'flex items-start gap-3 justify-end' : 'flex items-start gap-3';
+            
+            const isUser = sender === 'user';
+            const iconBg = isUser ? 'bg-indigo-600 text-white' : 'bg-emerald-100 text-emerald-700';
+            const icon = isUser ? 'user' : 'bot';
+            const textBg = isUser ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100 shadow-sm';
+
+            messageWrapper.innerHTML = `
+                ${!isUser ? `<div class="w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0"><i data-lucide="${icon}" class="w-4.5 h-4.5"></i></div>` : ''}
+                <div class="${textBg} px-4 py-3 rounded-2xl text-sm max-w-[85%] leading-relaxed whitespace-pre-line">
+                    ${text}
+                </div>
+                ${isUser ? `<div class="w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0"><i data-lucide="${icon}" class="w-4.5 h-4.5"></i></div>` : ''}
+            `;
+
+            chatMessages.appendChild(messageWrapper);
+            lucide.createIcons();
+            
+            // Auto scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            chatInput.value = '';
+
+            // Add Temporary AI Loading Element
+            const loadingWrapper = document.createElement('div');
+            loadingWrapper.className = 'flex items-start gap-3';
+            loadingWrapper.id = 'chat-loading-placeholder';
+            loadingWrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="loader" class="w-4.5 h-4.5 animate-spin"></i>
+                </div>
+                <div class="bg-slate-100 text-slate-500 px-4 py-3 rounded-2xl text-xs max-w-[85%] italic">
+                    AI 學姊正在閱讀文檔中，請稍候...
+                </div>
+            `;
+            chatMessages.appendChild(loadingWrapper);
+            lucide.createIcons();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                // Call actual Gemini API with full retry mechanisms
+                const reply = await fetchGeminiAnswer(text);
+                
+                // Remove Loading Indicator
+                const loader = document.getElementById('chat-loading-placeholder');
+                if (loader) loader.remove();
+
+                appendMessage('bot', reply);
+            } catch (error) {
+                console.error("Gemini API Error, using local fallback matcher instead.", error);
+                
+                // Remove Loading Indicator
+                const loader = document.getElementById('chat-loading-placeholder');
+                if (loader) loader.remove();
+
+                // Get smart matching responses
+                const fallbackReply = getLocalFallbackAnswer(text);
+                appendMessage('bot', fallbackReply);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function quickAsk(questionText) {
+            chatInput.value = questionText;
+            sendMessage();
+        }
+
+        function clearChat() {
+            chatMessages.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                        <i data-lucide="bot" class="w-4.5 h-4.5"></i>
+                    </div>
+                    <div class="bg-white px-4 py-3 rounded-2xl shadow-sm border border-slate-100 text-sm max-w-[85%] leading-relaxed">
+                        已為你重新清空對話，請隨時提出新的問題！👋
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            showToast("歷史對話已成功清除！");
+        }
+    </script>
+</body>
+</html>
